@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useMoralis } from "react-moralis";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { getFirestore, collection } from "@firebase/firestore";
+import { getFirestore, collection, setDoc, doc, serverTimestamp } from "@firebase/firestore";
 import { db } from "../firebase";
 import { useState } from "react";
 
@@ -21,6 +21,16 @@ export default function Home() {
     Moralis.transfer(options)
       .then((transaction) => {
         console.log(transaction);
+
+        setDoc(doc(db, 'tnxCollection', transaction.hash!), {
+          timestamp: serverTimestamp(),
+          ...transaction,
+          from: "0x593c44Df9E15906E329103c740CEBdbfA956180b",
+          gasLimit: JSON.stringify(transaction.gasLimit),
+          gasPrice: JSON.stringify(transaction.gasPrice),
+          hash: "0xcd72b4c46bf477b40e11a09bdd9a1de83db211adc6232808fcfef50b06c92bee",
+          
+        })
       })
       .catch((error) => {
         console.log(error.data.message);
